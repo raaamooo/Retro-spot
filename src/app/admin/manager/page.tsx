@@ -239,7 +239,7 @@ export default function ManagerPage() {
 
   const batchGenerateLocations = async () => {
     try {
-      const newLocations = [];
+      const newLocations: any[] = [];
       for (let i = 0; i < batchForm.count; i++) {
         const name = `Table ${batchForm.startNum + i}`;
         const res = await fetch(`${API_URL}/api/locations`, {
