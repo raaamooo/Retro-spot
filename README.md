@@ -1,36 +1,79 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Retro Spot — Full-Stack Platform
 
-## Getting Started
+A premium neo-retro cafe and workspace management platform built with Next.js, Node.js, Prisma, and PostgreSQL.
 
-First, run the development server:
+## Features
+- **Real-Time Dashboards**: Separate tablet-optimized interfaces for Barista, Waiter, Cashier, Inventory, and Manager.
+- **Dynamic Menu**: Real-time availability synchronization based on live inventory levels.
+- **Booking System**: Event and workspace bookings with automated payment verification (Instapay/Mobile Wallet).
+- **Art Platform**: Weekly bidding for local artists' work.
+- **Localization**: Full English and Arabic (RTL) support.
+- **Responsive Design**: Mobile-first customer experience with premium animations.
 
+---
+
+## 🛠 Deployment Guide (Render)
+
+This project is optimized for deployment on **Render**.
+
+### 1. Database Setup
+1. Create a **PostgreSQL** database on Render.
+2. Copy the **Internal Database URL**.
+
+### 2. Backend Deployment (Web Service)
+1. Create a new **Web Service** on Render.
+2. Point it to your repository.
+3. **Root Directory**: `backend`
+4. **Build Command**: `npm run render-build`
+5. **Start Command**: `npm start`
+6. **Environment Variables**:
+   - `DATABASE_URL`: (Paste your PostgreSQL URL)
+   - `FRONTEND_URL`: (The URL of your frontend static site once deployed)
+   - `JWT_SECRET`: (Generate a secure random string)
+   - `NODE_ENV`: `production`
+   - `INSTAPAY_PHONE`: Your Instapay number
+   - `MOBILE_WALLET_PHONE`: Your Vodafone Cash/Mobile Wallet number
+   - `MAP_EMBED_URL`: Your Google Maps embed URL
+
+### 3. Frontend Deployment (Static Site)
+1. Create a new **Static Site** on Render.
+2. Point it to your repository.
+3. **Root Directory**: `frontend`
+4. **Build Command**: `npm run build`
+5. **Publish Directory**: `out` (if using Static Export) or `.next` (if using Web Service)
+   - *Note: If you want real-time features on a static site, ensure the backend URL is set correctly.*
+6. **Environment Variables**:
+   - `NEXT_PUBLIC_API_URL`: (The URL of your deployed backend)
+
+---
+
+## 🚀 Local Development
+
+### Prerequisites
+- Node.js 18+
+- PostgreSQL (or use SQLite for local testing by changing `provider` in `prisma/schema.prisma`)
+
+### Backend
 ```bash
+cd backend
+npm install
+npx prisma migrate dev
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📂 Project Structure
+- `/backend`: Express.js API, Prisma ORM, Socket.IO.
+- `/frontend`: Next.js (App Router), Tailwind CSS, Framer Motion.
+- `/prisma`: Database schema and seed data.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📄 License
+Private / Proprietary.

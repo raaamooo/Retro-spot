@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retro Spot Platform Presentation</title>
+
+    <!-- Fonts: Fontshare Clash Display for headings, Satoshi for body -->
+    <link href="https://api.fontshare.com/v2/css?f[]=clash-display@700,600,500&f[]=satoshi@700,500,400&display=swap" rel="stylesheet">
+
+    <style>
+        /* ===========================================
+           CSS CUSTOM PROPERTIES (THEME: NEON RETRO SPOT)
+           =========================================== */
+        :root {
+            /* Colors */
+            --bg-primary: #120e15; /* Deep dark purple-ish black */
+            --bg-secondary: #1a1520;
+            --text-primary: #ffffff;
+            --text-secondary: #a39eb0;
+            
+            /* Retro Spot Primary is ~hsl(330, 60%, 55%) in dark mode */
+            --accent: #d6407f; 
+            --accent-glow: rgba(214, 64, 127, 0.4);
+            
+            --success: #38bdf8; /* Cyan for contrast */
+
+            /* Typography — MUST use clamp() */
+            --font-display: 'Clash Display', sans-serif;
+            --font-body: 'Satoshi', sans-serif;
+            --title-size: clamp(2.5rem, 7vw, 6rem);
+            --subtitle-size: clamp(1rem, 2.5vw, 1.5rem);
+            --body-size: clamp(0.875rem, 1.5vw, 1.125rem);
+
+            /* Spacing — MUST use clamp() */
+            --slide-padding: clamp(2rem, 5vw, 5rem);
+            --content-gap: clamp(1.5rem, 3vw, 3rem);
+
+            /* Animation */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --duration-normal: 0.8s;
+        }
+
+        /* ===========================================
+           BASE STYLES
+           =========================================== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-display);
+            font-weight: 700;
+            line-height: 1.1;
+            letter-spacing: -0.02em;
+        }
+
+        p, li {
+            line-height: 1.6;
+            color: var(--text-secondary);
+        }
+
+        /* ===========================================
+           VIEWPORT FITTING: MANDATORY BASE STYLES
+           =========================================== */
+        html, body { height: 100%; overflow-x: hidden; }
+        html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+
+        .slide {
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            scroll-snap-align: start;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-color: var(--bg-primary);
+        }
+
+        /* Decorative Backgrounds */
+        .slide::before {
+            content: '';
+            position: absolute;
+            top: 20%;
+            left: 20%;
+            width: 40vw;
+            height: 40vw;
+            background: var(--accent);
+            filter: blur(120px);
+            opacity: 0.15;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .slide::after {
+            content: '';
+            position: absolute;
+            bottom: 10%;
+            right: 10%;
+            width: 35vw;
+            height: 35vw;
+            background: var(--success);
+            filter: blur(150px);
+            opacity: 0.1;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .slide-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-height: 100%;
+            overflow: hidden;
+            padding: var(--slide-padding);
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Center content horizontally too if .centered class is present */
+        .slide-content.centered {
+            align-items: center;
+            text-align: center;
+        }
+
+        /* Typography scaling */
+        :root {
+            --h2-size: clamp(1.5rem, 4vw, 3.5rem);
+            --h3-size: clamp(1.25rem, 3vw, 2rem);
+            --small-size: clamp(0.75rem, 1vw, 0.9rem);
+            --element-gap: clamp(0.5rem, 1.5vw, 1.5rem);
+        }
+
+        .card, .container, .content-box {
+            max-width: min(90vw, 1200px);
+            max-height: min(80vh, 800px);
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .feature-list, .bullet-list {
+            gap: clamp(0.6rem, 1.5vh, 1.5rem);
+            display: flex;
+            flex-direction: column;
+            list-style: none;
+        }
+
+        .feature-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            font-size: var(--body-size);
+        }
+        
+        .feature-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--accent);
+            font-weight: bold;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+            gap: clamp(1rem, 2.5vw, 2rem);
+            width: 100%;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: rgba(26, 21, 32, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: clamp(1rem, 2vw, 1.5rem);
+            padding: clamp(1.5rem, 3vw, 2.5rem);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .glass-card h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: var(--h3-size);
+        }
+
+        /* ===========================================
+           RESPONSIVE BREAKPOINTS
+           =========================================== */
+        @media (max-height: 700px) {
+            :root {
+                --slide-padding: clamp(1rem, 3vw, 2rem);
+                --content-gap: clamp(0.75rem, 1.5vw, 1.5rem);
+            }
+        }
+
+        @media (max-height: 600px) {
+            .nav-dots { display: none !important; }
+        }
+
+        @media (max-width: 600px) {
+            .grid { grid-template-columns: 1fr; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.2s !important;
+            }
+            html { scroll-behavior: auto; }
+        }
+
+        /* ===========================================
+           ANIMATIONS
+           =========================================== */
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity var(--duration-normal) var(--ease-out-expo),
+                        transform var(--duration-normal) var(--ease-out-expo);
+        }
+        
+        .reveal-fade {
+            opacity: 0;
+            transition: opacity var(--duration-normal) var(--ease-out-expo);
+        }
+
+        .slide.visible .reveal, .slide.visible .reveal-fade {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Stagger logic */
+        .stagger-1 { transition-delay: 0.1s; }
+        .stagger-2 { transition-delay: 0.2s; }
+        .stagger-3 { transition-delay: 0.3s; }
+        .stagger-4 { transition-delay: 0.4s; }
+        .stagger-5 { transition-delay: 0.5s; }
+
+        /* Highlight Text */
+        .text-gradient {
+            background: linear-gradient(135deg, #ffffff 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ===========================================
+           NAVIGATION & UI
+           =========================================== */
+        .progress-bar {
+            position: fixed;
+            top: 0; left: 0; height: 4px;
+            background: var(--accent);
+            width: 0%;
+            z-index: 9999;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--accent-glow);
+        }
+
+        .nav-dots {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 9999;
+        }
+
+        .nav-dot {
+            width: 12px; height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .nav-dot:hover { background: rgba(255, 255, 255, 0.5); }
+        .nav-dot.active {
+            background: transparent;
+            border-color: var(--accent);
+            box-shadow: 0 0 10px var(--accent-glow);
+            transform: scale(1.3);
+        }
+
+        /* ===========================================
+           INLINE EDITING UI
+           =========================================== */
+        .edit-hotzone {
+            position: fixed; top: 0; left: 0;
+            width: 80px; height: 80px;
+            z-index: 10000;
+            cursor: pointer;
+        }
+        .edit-toggle {
+            position: fixed;
+            top: 15px; left: 15px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 10001;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px; height: 40px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px var(--accent-glow);
+        }
+        .edit-toggle.show,
+        .edit-toggle.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .edit-toggle.active {
+            background: var(--success);
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.4);
+        }
+        [contenteditable="true"]:hover {
+            outline: 2px dashed rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+        }
+        [contenteditable="true"]:focus {
+            outline: 2px solid var(--accent);
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="progress-bar" id="progressBar"></div>
+    <nav class="nav-dots" id="navDots"></nav>
+
+    <!-- Inline Editing Controls -->
+    <div class="edit-hotzone"></div>
+    <button class="edit-toggle" id="editToggle" title="Edit mode (E)">✏️</button>
+
+    <!-- === SECTION 1: TITLE === -->
+    <section class="slide title-slide">
+        <div class="slide-content centered container">
+            <div class="reveal stagger-1" style="margin-bottom: 2rem;">
+                <div style="display: inline-flex; align-items: center; justify-content: center; width: 80px; height: 80px; border-radius: 20px; background: rgba(214, 64, 127, 0.2); border: 1px solid var(--accent); color: var(--accent); font-size: 2rem; font-weight: 900; box-shadow: 0 0 20px var(--accent-glow);">
+                    RS
+                </div>
+            </div>
+            <h1 class="reveal stagger-2 text-gradient" style="font-size: var(--title-size); margin-bottom: 1rem;">Retro Spot</h1>
+            <h2 class="reveal stagger-3" style="font-size: var(--h3-size); color: var(--text-secondary); max-width: 800px; font-weight: 500;">
+                The Next-Generation Cafe & Workspace Management Platform
+            </h2>
+            <div class="reveal stagger-4" style="margin-top: 4rem;">
+                <p style="font-size: var(--small-size); letter-spacing: 2px; text-transform: uppercase;">Scroll to begin</p>
+                <div style="width: 2px; height: 40px; background: var(--accent); margin: 1rem auto; opacity: 0.5;"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === SECTION 2: THE VISION === -->
+    <section class="slide">
+        <div class="slide-content container">
+            <h2 class="reveal stagger-1" style="font-size: var(--h2-size); margin-bottom: var(--content-gap);">
+                The <span class="text-gradient">Vision</span>
+            </h2>
+            
+            <div class="grid">
+                <div class="glass-card reveal stagger-2">
+                    <h3>Physical Space Meets Digital</h3>
+                    <p>Retro Spot bridges the gap between a premium physical cafe experience and a seamless digital interface. We've built an environment where every interaction is optimized.</p>
+                </div>
+                
+                <div class="glass-card reveal stagger-3">
+                    <h3>Dual Ecosystem</h3>
+                    <ul class="feature-list" style="margin-top: 1rem;">
+                        <li><strong>Customer Portal:</strong> Bookings, Arts, Dynamic Menu</li>
+                        <li><strong>Organizer Dashboard:</strong> Real-time operations & management</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === SECTION 3: CUSTOMER EXPERIENCE === -->
+    <section class="slide">
+        <div class="slide-content container">
+            <h2 class="reveal stagger-1" style="font-size: var(--h2-size); margin-bottom: 1rem;">
+                Customer <span class="text-gradient">Experience</span>
+            </h2>
+            <p class="reveal stagger-2" style="font-size: var(--body-size); margin-bottom: var(--content-gap); max-width: 600px;">
+                A Neo-Retro aesthetic wrapped in glassmorphism, designed to delight and convert.
+            </p>
+
+            <div class="grid" style="grid-template-columns: repeat(3, 1fr);">
+                <div class="glass-card reveal stagger-3">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">☕</div>
+                    <h3 style="font-size: 1.25rem;">Dynamic Menu</h3>
+                    <p style="font-size: 0.9rem;">Real-time inventory deduction. If ingredients are out, the item is instantly marked unavailable.</p>
+                </div>
+                <div class="glass-card reveal stagger-4">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">📅</div>
+                    <h3 style="font-size: 1.25rem;">Smart Bookings</h3>
+                    <p style="font-size: 0.9rem;">Seamless workspace reservations with multi-step validation and real-time availability checks.</p>
+                </div>
+                <div class="glass-card reveal stagger-5">
+                    <div style="font-size: 2rem; margin-bottom: 1rem;">🎨</div>
+                    <h3 style="font-size: 1.25rem;">Art Gallery</h3>
+                    <p style="font-size: 0.9rem;">A dedicated space for local artists to showcase their work, complete with a bidding system.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === SECTION 4: ADMINISTRATIVE ECOSYSTEM === -->
+    <section class="slide">
+        <div class="slide-content container">
+            <div style="display: flex; flex-direction: column; height: 100%;">
+                <div style="flex: 0 0 auto;">
+                    <h2 class="reveal stagger-1" style="font-size: var(--h2-size); margin-bottom: 1rem;">
+                        Administrative <span class="text-gradient">Ecosystem</span>
+                    </h2>
+                    <p class="reveal stagger-2" style="margin-bottom: var(--content-gap);">Role-based dashboards powered by Socket.IO for instant synchronization.</p>
+                </div>
+                
+                <div class="grid" style="flex: 1; align-content: center;">
+                    <div class="reveal stagger-3">
+                        <ul class="feature-list">
+                            <li><strong>Manager:</strong> Full oversight, analytics, and store control.</li>
+                            <li><strong>Inventory:</strong> Real-time stock alerts and ingredient management.</li>
+                            <li><strong>Cashier:</strong> POS interface with thermal receipt generation.</li>
+                            <li><strong>Barista/Waiter:</strong> Kanban-style active order fulfillment queues.</li>
+                            <li><strong>Organizer:</strong> Content management (News, Events, Arts).</li>
+                        </ul>
+                    </div>
+                    <div class="glass-card reveal stagger-4" style="display: flex; align-items: center; justify-content: center; border-color: var(--success); background: rgba(56, 189, 248, 0.05);">
+                        <div style="text-align: center;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem; color: var(--success);">⚡</div>
+                            <h3 style="color: var(--success);">Zero Latency</h3>
+                            <p style="font-size: 0.9rem;">When an order is placed, the Barista tablet pings instantly. No page reloads required.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === SECTION 5: TECH STACK === -->
+    <section class="slide">
+        <div class="slide-content container">
+            <h2 class="reveal stagger-1" style="font-size: var(--h2-size); margin-bottom: var(--content-gap);">
+                The <span class="text-gradient">Stack</span>
+            </h2>
+            
+            <div class="grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="glass-card reveal stagger-2">
+                    <h3>Frontend</h3>
+                    <ul class="feature-list" style="margin-top: 1rem;">
+                        <li><strong>Next.js 14</strong> (App Router)</li>
+                        <li><strong>Tailwind CSS v4</strong> (Inline theme mapping)</li>
+                        <li><strong>Framer Motion</strong> (Fluid animations)</li>
+                        <li><strong>Zustand/Context</strong> (State management)</li>
+                    </ul>
+                </div>
+                
+                <div class="glass-card reveal stagger-3">
+                    <h3>Backend & Infra</h3>
+                    <ul class="feature-list" style="margin-top: 1rem;">
+                        <li><strong>Express & Node.js</strong> (Robust API routing)</li>
+                        <li><strong>Prisma ORM</strong> (Type-safe database queries)</li>
+                        <li><strong>PostgreSQL</strong> (Relational data integrity)</li>
+                        <li><strong>Socket.IO</strong> (Bi-directional events)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- === SECTION 6: CLOSING === -->
+    <section class="slide">
+        <div class="slide-content centered container">
+            <h2 class="reveal stagger-1 text-gradient" style="font-size: var(--title-size); margin-bottom: 1rem;">
+                Ready to Experience Retro Spot?
+            </h2>
+            <p class="reveal stagger-2" style="font-size: var(--subtitle-size); max-width: 600px; margin: 0 auto 3rem auto;">
+                The platform is fully deployable and ready for production.
+            </p>
+            
+            <div class="reveal stagger-3" style="display: flex; gap: 1rem; justify-content: center;">
+                <div style="padding: 1rem 2rem; background: var(--accent); color: white; border-radius: 8px; font-weight: bold; font-family: var(--font-display); box-shadow: 0 4px 15px var(--accent-glow);">
+                    Explore App
+                </div>
+                <div style="padding: 1rem 2rem; background: transparent; border: 2px solid rgba(255,255,255,0.2); color: white; border-radius: 8px; font-weight: bold; font-family: var(--font-display);">
+                    View Dashboards
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        /* ===========================================
+           SLIDE PRESENTATION CONTROLLER
+           =========================================== */
+        class SlidePresentation {
+            constructor() {
+                this.slides = document.querySelectorAll('.slide');
+                this.currentSlide = 0;
+                this.isScrolling = false;
+                
+                this.setupIntersectionObserver();
+                this.setupKeyboardNav();
+                this.setupNavDots();
+                
+                // Initialize scroll listener for progress
+                window.addEventListener('scroll', () => {
+                    this.updateProgressBar();
+                    this.updateActiveDot();
+                }, { passive: true });
+                
+                // Set initial state
+                setTimeout(() => {
+                    this.updateProgressBar();
+                    this.updateActiveDot();
+                }, 100);
+            }
+
+            setupIntersectionObserver() {
+                const options = {
+                    root: null,
+                    rootMargin: '0px',
+                    threshold: 0.3 // Trigger when 30% visible
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            
+                            // Find index of intersecting slide
+                            const index = Array.from(this.slides).indexOf(entry.target);
+                            if (index !== -1) {
+                                this.currentSlide = index;
+                            }
+                        }
+                    });
+                }, options);
+
+                this.slides.forEach(slide => observer.observe(slide));
+            }
+
+            setupKeyboardNav() {
+                document.addEventListener('keydown', (e) => {
+                    // Ignore if user is editing text
+                    if (e.target.getAttribute('contenteditable') === 'true') return;
+                    
+                    if (this.isScrolling) return;
+
+                    if (e.key === 'ArrowDown' || e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey)) {
+                        e.preventDefault();
+                        this.goToSlide(this.currentSlide + 1);
+                    } else if (e.key === 'ArrowUp' || e.key === 'PageUp' || (e.key === ' ' && e.shiftKey)) {
+                        e.preventDefault();
+                        this.goToSlide(this.currentSlide - 1);
+                    }
+                });
+            }
+
+            setupNavDots() {
+                const container = document.getElementById('navDots');
+                this.slides.forEach((_, index) => {
+                    const dot = document.createElement('div');
+                    dot.className = 'nav-dot';
+                    dot.addEventListener('click', () => this.goToSlide(index));
+                    container.appendChild(dot);
+                });
+            }
+
+            updateActiveDot() {
+                const dots = document.querySelectorAll('.nav-dot');
+                dots.forEach((dot, index) => {
+                    if (index === this.currentSlide) {
+                        dot.classList.add('active');
+                    } else {
+                        dot.classList.remove('active');
+                    }
+                });
+            }
+
+            updateProgressBar() {
+                const scrolled = document.documentElement.scrollTop;
+                const totalHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                const progress = (scrolled / totalHeight) * 100;
+                document.getElementById('progressBar').style.width = `${progress}%`;
+            }
+
+            goToSlide(index) {
+                if (index >= 0 && index < this.slides.length) {
+                    this.isScrolling = true;
+                    this.slides[index].scrollIntoView({ behavior: 'smooth' });
+                    
+                    setTimeout(() => {
+                        this.isScrolling = false;
+                    }, 800); // Wait for scroll animation
+                }
+            }
+        }
+
+        const presentation = new SlidePresentation();
+
+        /* ===========================================
+           INLINE EDITING UI
+           =========================================== */
+        class InlineEditor {
+            constructor() {
+                this.isActive = false;
+                this.editableElements = 'h1, h2, h3, p, li, strong';
+                this.toggleBtn = document.getElementById('editToggle');
+                this.hotzone = document.querySelector('.edit-hotzone');
+                
+                this.setupToggleEvents();
+                this.loadSavedContent();
+            }
+
+            setupToggleEvents() {
+                // 1. Click on button
+                this.toggleBtn.addEventListener('click', () => this.toggleEditMode());
+                
+                // 2. Click on hotzone
+                this.hotzone.addEventListener('click', () => this.toggleEditMode());
+
+                // 3. Hover logic
+                let hideTimeout = null;
+                const showBtn = () => {
+                    clearTimeout(hideTimeout);
+                    this.toggleBtn.classList.add('show');
+                };
+                const hideBtn = () => {
+                    hideTimeout = setTimeout(() => {
+                        if (!this.isActive) this.toggleBtn.classList.remove('show');
+                    }, 400);
+                };
+
+                this.hotzone.addEventListener('mouseenter', showBtn);
+                this.hotzone.addEventListener('mouseleave', hideBtn);
+                this.toggleBtn.addEventListener('mouseenter', showBtn);
+                this.toggleBtn.addEventListener('mouseleave', hideBtn);
+
+                // 4. Keyboard shortcut
+                document.addEventListener('keydown', (e) => {
+                    if ((e.key === 'e' || e.key === 'E') && !e.target.getAttribute('contenteditable')) {
+                        this.toggleEditMode();
+                    } else if ((e.key === 's' || e.key === 'S') && (e.ctrlKey || e.metaKey)) {
+                        if (this.isActive) {
+                            e.preventDefault();
+                            this.saveContent();
+                            alert('Content saved locally! (In-browser localStorage)');
+                        }
+                    }
+                });
+            }
+
+            toggleEditMode() {
+                this.isActive = !this.isActive;
+                
+                const elements = document.querySelectorAll(this.editableElements);
+                elements.forEach(el => {
+                    // Don't make empty containers or structural elements editable easily
+                    if (el.children.length === 0 || el.tagName === 'P' || el.tagName === 'H1' || el.tagName === 'H2' || el.tagName === 'H3' || el.tagName === 'LI') {
+                        el.setAttribute('contenteditable', this.isActive);
+                    }
+                });
+
+                if (this.isActive) {
+                    this.toggleBtn.classList.add('active');
+                    this.toggleBtn.textContent = '💾';
+                    this.toggleBtn.title = "Save (Ctrl+S)";
+                } else {
+                    this.toggleBtn.classList.remove('active');
+                    this.toggleBtn.textContent = '✏️';
+                    this.toggleBtn.title = "Edit mode (E)";
+                    this.saveContent();
+                }
+            }
+
+            saveContent() {
+                const slides = document.querySelectorAll('.slide');
+                const contentMap = {};
+                
+                slides.forEach((slide, index) => {
+                    contentMap[`slide_${index}`] = slide.innerHTML;
+                });
+                
+                localStorage.setItem('retroSpotPresentationContent', JSON.stringify(contentMap));
+            }
+
+            loadSavedContent() {
+                const saved = localStorage.getItem('retroSpotPresentationContent');
+                if (saved) {
+                    try {
+                        const contentMap = JSON.parse(saved);
+                        const slides = document.querySelectorAll('.slide');
+                        slides.forEach((slide, index) => {
+                            if (contentMap[`slide_${index}`]) {
+                                slide.innerHTML = contentMap[`slide_${index}`];
+                            }
+                        });
+                        
+                        // Re-initialize intersection observer for new elements
+                        presentation.setupIntersectionObserver();
+                    } catch (e) {
+                        console.error("Failed to load saved presentation content", e);
+                    }
+                }
+            }
+        }
+
+        const editor = new InlineEditor();
+    </script>
+</body>
+</html>
